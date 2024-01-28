@@ -1,77 +1,96 @@
-# Imports
+# Import the Streamlit library
 import streamlit as st
-from streamlit_option_menu import option_menu
+from datetime import datetime
 
-# Theme
-theme_color = "#F63366"
-st.set_page_config(page_title="M1 Limousine", page_icon="", layout="wide")
+# Define test data for the limousine company
+company_data = {
+    "Company Name": "M1 Limousine, Inc.",
+    "Services": "CHAUFFEUR SERVICE, LIMO SERVICE, TRANSPORTATION SERVICE",
+    "Phone Number": "(224) 301-4623",
+    "Location": "Chicago",
+    "Website Designer": "Yaser Salha",
+    "Full Name": "",
+    "Email Address": "",
+    "Pick-up Address": "",
+    "Drop-off Address": "",
+    "Number of Passengers": "0",  # Default value is "0"
+    "Number of Bags": "0",  # Default value is "0"
+}
 
-# Menu
-with st.container():
-    chosen = option_menu(
-        menu_title="Main Menu",
-        options=["Home", "Our Fleet", "Reservation", "Services", "Contact"],
-        icons=["house", "car", "calendar-check", "gear", "envelope"],
-        menu_icon="cast",
-        default_index=0,
-        orientation="horizontal",
-        styles={
-            "container": {"padding": "0!important"},
-            "icon": {"color": "orange"},
-            "nav-link": {"--hover-color": theme_color},
-            "nav-link-selected": {"background-color": theme_color},
-        }
-    )
+# Define the main function for your Streamlit app
+def main():
+    # Use Streamlit's built-in features for navigation
+    st.sidebar.title("M1 Limousine, Inc.")
 
-# Page Content
-if chosen == "Home":
-    st.title("Welcome to M1 Limousine!")
-    st.write("Luxury Vehicles for Every Occasion")
-    st.image("logo.png")
+    # Create horizontal tabs for navigation
+    tabs = ["Home", "Services", "Get a Quote", "Contact"]
+    selected_tab = st.sidebar.radio("Navigation", tabs)
 
-elif chosen == "Our Fleet":
-    st.header("Our Luxury Fleet")
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.image("sedan.jpg")
-        st.caption("Luxury Sedans")
+    if selected_tab == "Home":
+        home()
+    elif selected_tab == "Services":
+        services()
+    elif selected_tab == "Get a Quote":
+        get_quote()
+    elif selected_tab == "Contact":
+        contact()
 
-    with col2:
-        st.image("suv.jpg")
-        st.caption("Premium SUVs")
+# Define your page functions with enriched content
+def home():
+    st.title("Welcome to M1 Limousine, Inc.")
+    st.markdown(f"Current Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    st.markdown("""
+        M1 Limousine, Inc. is your premier chauffeur and limo service in Chicago. We provide top-notch transportation services to make your journey comfortable and luxurious.
+    """)
+    st.markdown(f"Designed by: {company_data['Website Designer']}")
 
-    with col3:  
-        st.image("limo.jpg")
-        st.caption("Stretch Limousines")
-       
-    st.write("Modern, luxury vehicles for any occasion!")
+def services():
+    st.title("Our Services")
+    st.markdown(f"We offer a wide range of services, including: {company_data['Services']}")
 
-elif chosen == "Reservation":
-    st.header("Make a Reservation")
-    with st.form("reservation_form"):
-        name = st.text_input("Your Name")
-        email = st.text_input("Email")
-        pickup_date = st.date_input("Pickup Date")
-        pickup_time = st.time_input("Pickup Time")
-        pickup_location = st.text_input("Pickup Location")
-        dropoff_location = st.text_input("Dropoff Location")
-        special_requests = st.text_area("Special Requests")
-        submit_button = st.form_submit_button("Submit Reservation")
-        if submit_button:
-            st.success("Thank you, your reservation request has been submitted.")
+def get_quote():
+    st.title("Get a Quote")
 
-elif chosen == "Contact":
-    st.header("Contact Us")
-    with st.form("contact_form"):
-        name = st.text_input("Your Name")
-        email = st.text_input("Your Email")
-        message = st.text_area("Your Message")
-        submit_button = st.form_submit_button("Send Message")
-        if submit_button:
-            st.info("Thank you for your message. We will get back to you soon.")
+    # Input fields for customer details
+    full_name = st.text_input("Full Name", value=company_data["Full Name"])
+    email = st.text_input("Email Address", value=company_data["Email Address"])
+    phone_number = st.text_input("Phone Number", value=company_data["Phone Number"])
 
-# Footer    
-footer_template = """<p style="font-family:sans-serif; color:{color}; text-align:center;">
-    Copyright {year} M1 Limousine</p>"""
+    # Input fields for quote request
+    st.subheader("Quote Request Details")
+    pick_up_address = st.text_input("Pick-up Address", value=company_data["Pick-up Address"])
+    drop_off_address = st.text_input("Drop-off Address", value=company_data["Drop-off Address"])
+    num_passengers = st.number_input("Number of Passengers", value=int(company_data["Number of Passengers"]), min_value=0)
+    num_bags = st.number_input("Number of Bags", value=int(company_data["Number of Bags"]), min_value=0)
 
-st.markdown(footer_template.format(year=2024, color=theme_color), unsafe_allow_html=True)
+    # Button to submit the quote request
+    if st.button("Get a Quote"):
+        # Validate the email format
+        if not validate_email(email):
+            st.error("Please enter a valid email address.")
+        else:
+            # Process submitted quote request
+            st.success(f"Thank you, {full_name}! Your quote request has been received. We will contact you shortly with a quote.")
+
+# Function to validate email format
+def validate_email(email):
+    import re
+    # Regular expression pattern for basic email validation
+    pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+    return re.match(pattern, email) is not None
+
+def contact():
+    st.title("Contact Us")
+    # Display company details with contact information
+    st.markdown(f"""
+        For inquiries and reservations, please contact us:
+
+        Company Name: {company_data["Company Name"]}
+        Phone Number: {company_data["Phone Number"]}
+        Location: {company_data["Location"]}
+        Website Designer: {company_data["Website Designer"]}
+    """)
+
+# Run the Streamlit app
+if __name__ == "__main__":
+    main()
