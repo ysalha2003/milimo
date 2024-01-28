@@ -1,6 +1,9 @@
 import streamlit as st
 import hydralit_components as hc
 
+st.set_page_config(layout="wide")
+
+
 # Menu definitions
 menu_data = [
     {'label': 'Home'},
